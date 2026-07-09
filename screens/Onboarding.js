@@ -9,13 +9,17 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Onboarding() {
+  const { finishOnboarding } = useAuth();
+
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [firstNameError, setFirstNameError] = useState("");
   const [buttonEnabled, setButtonEnabled] = useState(false);
+
   const validateForm = () => {
     if (!firstName) {
       setFirstNameError("First name is required.");
@@ -88,6 +92,8 @@ export default function Onboarding() {
         </View>
         <View style={styles.loginBottom}>
           <Pressable
+            disabled={!buttonEnabled}
+            onPress={finishOnboarding}
             style={[
               styles.button,
               !buttonEnabled ? styles.buttonDisabled : null,
@@ -139,14 +145,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#c3caca",
   },
   header: {
-    flex: 0.24,
     backgroundColor: "#d6dbe0",
     alignItems: "center",
     justifyContent: "center",
+    paddingTop: 5,
   },
   headerImage: {
     width: 320,
-    height: 180,
+    height: 140,
     resizeMode: "contain",
   },
   loginTop: {

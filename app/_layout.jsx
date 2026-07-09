@@ -1,29 +1,23 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import SplashScreen from "../screens/SplashScreen";
 
 export default function RootLayout() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(false);
+  return (
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
+  );
+}
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const isCompleted = await AsyncStorage.getItem("@onboarding_completed");
-        setIsOnboardingCompleted(isCompleted === "true");
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
-
+function RootNavigator() {
+  const { isLoading, isOnboardingCompleted } = useAuth();
   if (isLoading) {
     return <SplashScreen />;
   }
 
   return (
-    <Stack>
+    <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={isOnboardingCompleted}>
         <Stack.Screen name="profile" />
       </Stack.Protected>
