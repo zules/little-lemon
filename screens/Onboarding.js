@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 export default function Onboarding() {
@@ -56,7 +56,7 @@ export default function Onboarding() {
       <View style={styles.container}>
         <View style={styles.header}>
           <Image
-            source={require("../../assets/images/Logo.png")}
+            source={require("../assets/images/Logo.png")}
             style={styles.headerImage}
           />
         </View>
@@ -159,7 +159,6 @@ const styles = StyleSheet.create({
     paddingVertical: 45,
     paddingHorizontal: 20,
     alignItems: "flex-end",
-    flex: 0.1,
   },
   login: {
     paddingVertical: 40,
