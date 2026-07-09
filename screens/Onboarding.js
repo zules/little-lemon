@@ -93,7 +93,7 @@ export default function Onboarding() {
         <View style={styles.loginBottom}>
           <Pressable
             disabled={!buttonEnabled}
-            onPress={finishOnboarding}
+            onPress={() => finishOnboarding({ firstName, email })}
             style={[
               styles.button,
               !buttonEnabled ? styles.buttonDisabled : null,
