@@ -1,19 +1,37 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
   KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import Header from "../components/Header";
 import { useAuth } from "../contexts/AuthContext";
-import { getMenuDb, initializeDb, saveToMenuDb } from "../lib/database";
+import {
+  filterMenuDb,
+  getMenuDb,
+  initializeDb,
+  saveToMenuDb,
+} from "../lib/database";
+const CATEGORIES = ["starters", "mains", "desserts", "drinks", "specials"];
 
 export default function Home() {
   const { user, updateUser, signOut } = useAuth();
   const [menu, setMenu] = useState([]);
+  const [activeCats, setActiveCats] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearchTerm(searchTerm), 500);
+    return () => clearTimeout(id);
+  }, [searchTerm]);
 
   useEffect(() => {
     (async () => {
@@ -35,6 +53,19 @@ export default function Home() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    (async () =>
+      setMenu(await filterMenuDb(activeCats, debouncedSearchTerm)))();
+  }, [activeCats, debouncedSearchTerm]);
+
+  function toggleCategory(cat) {
+    if (activeCats.includes(cat)) {
+      setActiveCats(activeCats.filter((i) => i !== cat));
+    } else {
+      setActiveCats([...activeCats, cat]);
+    }
+  }
 
   const SingleMenuItem = ({ name, description, price, image }) => {
     const imgU = `https://github.com/Meta-Mobile-Developer-PC/Working-With-Data-API/blob/main/images/${image}?raw=true`;
@@ -70,10 +101,77 @@ export default function Home() {
     );
   };
 
+  const CategoryButton = ({ cat, isSelected }) => {
+    return (
+      <Pressable onPress={() => toggleCategory(cat)}>
+        <View style={[styles.catButton, isSelected && styles.catButtonActive]}>
+          <Text style={styles.catText}>
+            {cat?.charAt(0).toUpperCase() + cat?.slice(1)}
+          </Text>
+        </View>
+      </Pressable>
+    );
+  };
+
   return (
-    <KeyboardAvoidingView>
+    <KeyboardAvoidingView style={{ flex: 1 }}>
       <Header avatarUri={user?.avatar} showBack={false} />
+
       <FlatList
+        ListHeaderComponent={
+          <>
+            <View style={{ backgroundColor: "#165337", padding: 15 }}>
+              <Text style={{ fontSize: 38, color: "#ddd020" }}>
+                Little Lemon
+              </Text>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                <View style={{ gap: 20 }}>
+                  <Text style={{ fontSize: 22, color: "#eee" }}>Chicago</Text>
+                  <Text style={{ width: 180, fontSize: 14, color: "#eee" }}>
+                    We are a family owned Mediterranean restaurant, focused on
+                    traditional recipes served with a modern twist.
+                  </Text>
+                </View>
+                <Image
+                  source={require("../assets/images/hero-image.png")}
+                  style={{ height: 140, width: 140, borderRadius: 20 }}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: "#dbdbdb",
+                  borderRadius: 20,
+                  alignItems: "center",
+                  padding: 10,
+                }}
+              >
+                <Ionicons name="search" size={28} />
+                <TextInput
+                  style={{ flex: 1 }}
+                  value={searchTerm}
+                  onChangeText={setSearchTerm}
+                />
+              </View>
+            </View>
+            <ScrollView
+              horizontal
+              style={{ padding: 10 }}
+              contentContainerStyle={{ gap: 10, paddingEnd: 20 }}
+              showsHorizontalScrollIndicator={false}
+            >
+              {CATEGORIES.map((cat) => (
+                <CategoryButton
+                  cat={cat}
+                  isSelected={activeCats.includes(cat)}
+                  key={cat}
+                />
+              ))}
+            </ScrollView>
+          </>
+        }
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         data={menu}
         renderItem={({ item }) => (
           <SingleMenuItem
@@ -111,5 +209,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     gap: 10,
     paddingHorizontal: 20,
+  },
+  catButton: {
+    backgroundColor: "#e0e0e0",
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+  },
+  catButtonActive: {
+    backgroundColor: "#dbd800",
+  },
+  catText: {
+    fontWeight: "800",
+    color: "#103624",
   },
 });

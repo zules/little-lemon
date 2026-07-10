@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   Image,
@@ -189,11 +190,20 @@ export default function Profile() {
         >
           <Pressable
             style={styles.buttonSecondary}
-            onPress={() => setPageData(user)}
+            onPress={() => {
+              setPageData(user);
+              router.back();
+            }}
           >
             <Text style={styles.buttonSecondaryText}>Discard Changes</Text>
           </Pressable>
-          <Pressable style={styles.button} onPress={() => updateUser(pageData)}>
+          <Pressable
+            style={styles.button}
+            onPress={() => {
+              updateUser(pageData);
+              router.back();
+            }}
+          >
             <Text style={styles.buttonWhiteText}>Save Changes</Text>
           </Pressable>
         </View>
