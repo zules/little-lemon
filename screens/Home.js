@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import {
-    FlatList,
-    Image,
-    KeyboardAvoidingView,
-    StyleSheet,
-    Text,
-    View,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import Header from "../components/Header";
 import { useAuth } from "../contexts/AuthContext";
+import { getMenuDb, initializeDb, saveToMenuDb } from "../lib/database";
 
 export default function Home() {
   const { user, updateUser, signOut } = useAuth();
@@ -16,14 +17,21 @@ export default function Home() {
 
   useEffect(() => {
     (async () => {
-      try {
-        const response = await fetch(
-          "https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json",
-        );
-        const json = await response.json();
-        setMenu(json.menu);
-      } catch (e) {
-        console.error(e);
+      await initializeDb();
+      const menuDbItems = await getMenuDb();
+      if (menuDbItems.length > 0) {
+        setMenu(menuDbItems);
+      } else {
+        try {
+          const response = await fetch(
+            "https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json",
+          );
+          const json = await response.json();
+          await saveToMenuDb(json.menu);
+          setMenu(json.menu);
+        } catch (e) {
+          console.error(e);
+        }
       }
     })();
   }, []);
@@ -37,12 +45,7 @@ export default function Home() {
         <View style={{ width: "75%" }}>
           <Text style={styles.itemName}>{name}</Text>
           <Text style={styles.itemDescription}>{description}</Text>
-          <Text style={styles.itemPrice}>
-            ${price}
-            {typeof price === "number" && Number.isInteger(price)
-              ? ".00"
-              : null}
-          </Text>
+          <Text style={styles.itemPrice}>${Number(price).toFixed(2)}</Text>
         </View>
         {image && !imgFailed ? (
           <Image
