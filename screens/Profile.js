@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import Header from "../components/Header";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Profile() {
@@ -54,18 +55,7 @@ export default function Profile() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={styles.header}>
-        <Text>Back</Text>
-        <Image
-          source={require("../assets/images/Logo.png")}
-          style={styles.headerImage}
-        />
-        {pageData?.avatar ? (
-          <Image source={{ uri: pageData.avatar }} style={styles.avatarSmall} />
-        ) : (
-          <View style={styles.placeholderSmall}></View>
-        )}
-      </View>
+      <Header avatarUri={pageData?.avatar} />
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.contentArea}
@@ -213,18 +203,6 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    alignContent: "space-evenly",
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 15,
-    paddingTop: 15,
-    paddingBottom: 5,
-    borderBottomColor: "#BBBBBB",
-    borderBottomWidth: 1,
-  },
   textField: {
     borderWidth: 1,
     borderColor: "#dddddd",
@@ -240,11 +218,6 @@ const styles = StyleSheet.create({
     gap: 20,
     justifyContent: "flex-start",
     padding: 0,
-  },
-  headerImage: {
-    width: 220,
-    height: 100,
-    resizeMode: "contain",
   },
   h2: {
     fontSize: 20,
@@ -265,11 +238,6 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 75,
   },
-  avatarSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 75,
-  },
   placeholder: {
     width: 80,
     height: 80,
@@ -277,12 +245,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDDDDD",
     justifyContent: "center",
     alignItems: "center",
-  },
-  placeholderSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 75,
-    backgroundColor: "#DDDDDD",
   },
   button: {
     backgroundColor: "#1f4924",

@@ -19,6 +19,7 @@ function RootNavigator() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={isOnboardingCompleted}>
+        <Stack.Screen name="home" />
         <Stack.Screen name="profile" />
       </Stack.Protected>
       <Stack.Protected guard={!isOnboardingCompleted}>
